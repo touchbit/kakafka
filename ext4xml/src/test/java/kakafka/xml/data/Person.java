@@ -14,28 +14,26 @@
  * limitations under the License.
  */
 
-package kakafka.example;
+package kakafka.xml.data;
 
-import kakafka.client.KakafkaTopic;
-import lombok.Getter;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlTransient;
 
-/**
- * @author Oleg Shaburov (shaburov.o.a@gmail.com)
- * Created: 21.08.2022
- */
-@Getter
-public enum Topic implements KakafkaTopic {
+@SuppressWarnings("unused")
+@XmlRootElement(name = "Person")
+public class Person {
 
-    PAYMENT_INCOMING_TOPIC("payment.incoming"),
-    PAYMENT_OUTGOING_TOPIC("payment.outgoing"),
-    PAYMENT_OK_TOPIC("payment.ok"),
-    PAYMENT_ERROR_TOPIC("payment.error"),
-    ;
+    @XmlElement(name = "companyName", required = true)
+    private String companyName;
 
-    private final String name;
+    @XmlTransient
+    public String getCompanyName() {
+        return companyName;
+    }
 
-    Topic(String name) {
-        this.name = name;
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
     }
 
 }

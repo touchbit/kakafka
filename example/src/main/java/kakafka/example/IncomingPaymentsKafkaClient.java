@@ -27,10 +27,17 @@ import static kakafka.example.Topic.*;
  */
 public class IncomingPaymentsKafkaClient extends KakafkaClientBase {
 
-    private static final KakafkaProperties PROPS = new KakafkaProperties("localhost:9092,another.host:9092");
+    private static final KakafkaProperties PROPS = new KakafkaProperties("localhost:9092,another.host:9092")
+            .withPlainSASL("login", "password")
+            .withHttps(true, false);
+    private static final IncomingPaymentsKafkaClient SINGLETON = new IncomingPaymentsKafkaClient();
 
     protected IncomingPaymentsKafkaClient() {
-        super(PROPS, PAYMENT_INCOMING, PAYMENT_RESULT, PAYMENT_ERROR, DLQ);
+        super(PROPS, PAYMENT_INCOMING_TOPIC, PAYMENT_OK_TOPIC, PAYMENT_ERROR_TOPIC);
+    }
+
+    public static IncomingPaymentsKafkaClient get() {
+        return SINGLETON;
     }
 
 }

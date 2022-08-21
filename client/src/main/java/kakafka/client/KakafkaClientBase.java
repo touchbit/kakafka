@@ -16,10 +16,11 @@
 
 package kakafka.client;
 
+import kakafka.KakafkaException;
 import lombok.Getter;
+import org.apache.kafka.clients.CommonClientConfigs;
 
-import java.util.Arrays;
-import java.util.Properties;
+import java.util.*;
 
 
 /**
@@ -34,13 +35,22 @@ public abstract class KakafkaClientBase {
     private final String topic4Produce;
     private final String[] topics4Consume;
     private final KakafkaProducer producer;
+    private final static List<Class<?>> INSTANCES = new ArrayList<>();
 
     protected KakafkaClientBase(final Properties properties,
                                 final String topic4Produce,
                                 final String... topics4Consume) {
+        if (INSTANCES.contains(this.getClass())) {
+            throw new KakafkaException("Client must be singleton: " + this.getClass());
+        }
+        INSTANCES.add(this.getClass());
         this.topic4Produce = topic4Produce;
         this.topics4Consume = topics4Consume;
         this.properties = properties;
+        final Object clientId = getProperties().get(CommonClientConfigs.CLIENT_ID_CONFIG);
+        if (clientId == null || String.valueOf(clientId).isEmpty()) {
+            getProperties().setProperty(CommonClientConfigs.CLIENT_ID_CONFIG, "kakafka-" + this.getClass().getSimpleName());
+        }
         // for override method
         producer = new KakafkaProducer(getProperties());
     }
