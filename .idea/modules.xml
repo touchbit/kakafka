@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/all/all.iml" filepath="$PROJECT_DIR$/all/all.iml" />
+      <module fileurl="file://$PROJECT_DIR$/client/client.iml" filepath="$PROJECT_DIR$/client/client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/example/example.iml" filepath="$PROJECT_DIR$/example/example.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ext4grpc/ext4grpc.iml" filepath="$PROJECT_DIR$/ext4grpc/ext4grpc.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ext4gson/ext4gson.iml" filepath="$PROJECT_DIR$/ext4gson/ext4gson.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ext4jackson/ext4jackson.iml" filepath="$PROJECT_DIR$/ext4jackson/ext4jackson.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ext4xml/ext4xml.iml" filepath="$PROJECT_DIR$/ext4xml/ext4xml.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/kakafka.iml" filepath="$PROJECT_DIR$/.idea/kakafka.iml" />
+    </modules>
+  </component>
+</project>
