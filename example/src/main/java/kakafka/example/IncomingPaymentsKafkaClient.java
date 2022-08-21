@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-package kakafka;
+package kakafka.example;
 
-import lombok.experimental.StandardException;
+import kakafka.client.KakafkaClientBase;
+import kakafka.client.KakafkaProperties;
+
+import static kakafka.example.Topic.*;
 
 /**
  * @author Oleg Shaburov (shaburov.o.a@gmail.com)
  * Created: 21.08.2022
  */
-@StandardException
-public class KakafkaException extends RuntimeException {
+public class IncomingPaymentsKafkaClient extends KakafkaClientBase {
 
-    public KakafkaException(final String message, final boolean hideStackTrace) {
-        super(message, null, hideStackTrace, !hideStackTrace);
+    private static final KakafkaProperties PROPS = new KakafkaProperties("localhost:9092,another.host:9092");
+
+    protected IncomingPaymentsKafkaClient() {
+        super(PROPS, PAYMENT_INCOMING, PAYMENT_RESULT, PAYMENT_ERROR, DLQ);
     }
 
 }

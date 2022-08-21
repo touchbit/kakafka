@@ -14,19 +14,29 @@
  * limitations under the License.
  */
 
-package kakafka;
+package kakafka.example;
 
-import lombok.experimental.StandardException;
+import kakafka.client.KakafkaTopic;
+import lombok.Getter;
 
 /**
  * @author Oleg Shaburov (shaburov.o.a@gmail.com)
  * Created: 21.08.2022
  */
-@StandardException
-public class KakafkaException extends RuntimeException {
+@Getter
+public enum Topic implements KakafkaTopic {
 
-    public KakafkaException(final String message, final boolean hideStackTrace) {
-        super(message, null, hideStackTrace, !hideStackTrace);
+    DLQ("dead-letter-queue"),
+    PAYMENT_INCOMING("payment.incoming"),
+    PAYMENT_OUTGOING("payment.outgoing"),
+    PAYMENT_RESULT("payment.result"),
+    PAYMENT_ERROR("payment.error"),
+    ;
+
+    private final String name;
+
+    Topic(String name) {
+        this.name = name;
     }
 
 }

@@ -130,6 +130,12 @@
                 <version>1.0.0</version>
                 <scope>compile</scope>
             </dependency>
+            <dependency>
+                <groupId>org.touchbit.kakafka</groupId>
+                <artifactId>example</artifactId>
+                <version>1.0.0</version>
+                <scope>provided</scope>
+            </dependency>
             <!-- kafka -->
             <dependency>
                 <groupId>org.apache.kafka</groupId>

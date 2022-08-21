@@ -17,12 +17,18 @@
 package kakafka.util;
 
 import kakafka.KakafkaException;
+import lombok.experimental.UtilityClass;
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.util.*;
 import java.util.function.BiFunction;
 
+/**
+ * @author Oleg Shaburov (shaburov.o.a@gmail.com)
+ * Created: 21.08.2022
+ */
+@UtilityClass
 public class KUtils {
 
     @SuppressWarnings({"unchecked", "rawtypes"})

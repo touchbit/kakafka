@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-package kakafka;
-
-import lombok.experimental.StandardException;
+package kakafka.client;
 
 /**
+ * For topics enumeration
+ * <p>
+ *
  * @author Oleg Shaburov (shaburov.o.a@gmail.com)
  * Created: 21.08.2022
+ * <p>
+ * @see kakafka.example.Topic
+ * @see kakafka.example.IncomingPaymentsKafkaClient
+ * @see KakafkaClientBase#KakafkaClientBase(KakafkaTopic, KakafkaTopic...)
  */
-@StandardException
-public class KakafkaException extends RuntimeException {
+public interface KakafkaTopic {
 
-    public KakafkaException(final String message, final boolean hideStackTrace) {
-        super(message, null, hideStackTrace, !hideStackTrace);
-    }
+    String getName();
 
 }

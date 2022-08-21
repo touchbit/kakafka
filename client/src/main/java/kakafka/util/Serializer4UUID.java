@@ -20,6 +20,10 @@ import org.apache.kafka.common.serialization.Serializer;
 
 import java.util.UUID;
 
+/**
+ * @author Oleg Shaburov (shaburov.o.a@gmail.com)
+ * Created: 21.08.2022
+ */
 public class Serializer4UUID implements Serializer<UUID> {
 
     @Override

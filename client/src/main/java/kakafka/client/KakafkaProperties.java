@@ -29,9 +29,14 @@ import static org.apache.kafka.common.config.SaslConfigs.SASL_JAAS_CONFIG;
 import static org.apache.kafka.common.config.SaslConfigs.SASL_MECHANISM;
 import static org.apache.kafka.common.config.SslConfigs.*;
 
+/**
+ * @author Oleg Shaburov (shaburov.o.a@gmail.com)
+ * Created: 21.08.2022
+ */
 public class KakafkaProperties extends Properties {
 
-    public KakafkaProperties() {
+    public KakafkaProperties(String... bootstrapServerHosts) {
+        put(BOOTSTRAP_SERVERS_CONFIG, String.join("," , bootstrapServerHosts));
         put(ACKS_CONFIG, "all");
         put(RETRIES_CONFIG, 0);
         put(BATCH_SIZE_CONFIG, 16384);

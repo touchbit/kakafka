@@ -29,6 +29,10 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.Future;
 
+/**
+ * @author Oleg Shaburov (shaburov.o.a@gmail.com)
+ * Created: 21.08.2022
+ */
 @Slf4j
 @Getter
 @SuppressWarnings("unused")

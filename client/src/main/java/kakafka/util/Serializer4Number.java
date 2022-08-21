@@ -18,6 +18,10 @@ package kakafka.util;
 
 import org.apache.kafka.common.serialization.Serializer;
 
+/**
+ * @author Oleg Shaburov (shaburov.o.a@gmail.com)
+ * Created: 21.08.2022
+ */
 public class Serializer4Number<N extends Number> implements Serializer<N> {
 
     @Override
