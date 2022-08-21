@@ -130,6 +130,12 @@
                 <version>1.0.0</version>
                 <scope>compile</scope>
             </dependency>
+            <!-- kafka -->
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-clients</artifactId>
+                <version>3.2.1</version>
+            </dependency>
             <!-- utils dependencies -->
             <dependency>
                 <groupId>com.google.code.findbugs</groupId>
