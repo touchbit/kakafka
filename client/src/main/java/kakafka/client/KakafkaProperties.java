@@ -16,11 +16,13 @@
 
 package kakafka.client;
 
+import lombok.NonNull;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.common.config.SslConfigs;
 
 import java.nio.file.Path;
 import java.util.Properties;
+import java.util.UUID;
 
 import static org.apache.kafka.clients.CommonClientConfigs.RETRIES_CONFIG;
 import static org.apache.kafka.clients.CommonClientConfigs.SECURITY_PROTOCOL_CONFIG;
@@ -33,6 +35,7 @@ import static org.apache.kafka.common.config.SslConfigs.*;
  * @author Oleg Shaburov (shaburov.o.a@gmail.com)
  * Created: 21.08.2022
  */
+@SuppressWarnings("unused")
 public class KakafkaProperties extends Properties {
 
     public KakafkaProperties(String... bootstrapServerHosts) {
@@ -44,6 +47,16 @@ public class KakafkaProperties extends Properties {
         put(BUFFER_MEMORY_CONFIG, 33554432);
         put(SASL_MECHANISM, "");
         put(RECONNECT_BACKOFF_MS_CONFIG, "1000");
+        put("group.id", "KaKafka_" + UUID.randomUUID());
+        put("key.deserializer","org.apache.kafka.common.serialization.StringDeserializer");
+        put("value.deserializer","org.apache.kafka.common.serialization.ByteArrayDeserializer");
+        put("auto.offset.reset","latest");
+    }
+
+    @NonNull
+    public KakafkaProperties put(Object k, Object v) {
+        super.put(k, v);
+        return this;
     }
 
     public KakafkaProperties withPlainSASL(final String username, final String password) {
@@ -60,7 +73,9 @@ public class KakafkaProperties extends Properties {
      * @return this
      */
     public KakafkaProperties withHttps(final boolean withHttps, final boolean ignoreCertificateErrors) {
-        put(SECURITY_PROTOCOL_CONFIG, withHttps ? "SASL_SSL" : "");
+        if (withHttps) {
+            put(SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
+        }
         put(SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, ignoreCertificateErrors ? "" : "https");
         return this;
     }

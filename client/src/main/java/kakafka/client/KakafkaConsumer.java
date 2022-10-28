@@ -39,10 +39,10 @@ public class KakafkaConsumer {
         initConsumer();
         this.scheduler = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() ->
                 pollRecords(getConsumer(), poolingDuration), 0, poolingDuration.toMillis(), TimeUnit.MILLISECONDS);
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            getScheduler().cancel(false);
-            getConsumer().close();
-        }));
+    }
+
+    protected synchronized void dropMessagesByFilter(Predicate<ConsumerRecord<String, byte[]>> predicate) {
+        records.removeIf(predicate);
     }
 
     protected void initConsumer() {
@@ -59,8 +59,8 @@ public class KakafkaConsumer {
         records.forEach(getRecords()::add);
     }
 
-    protected synchronized List<ConsumerRecord<String, byte[]>> getMessages(Predicate<ConsumerRecord<String, byte[]>> p,
-                                                                            boolean isRemove) {
+    synchronized List<ConsumerRecord<String, byte[]>> getMessages(Predicate<ConsumerRecord<String, byte[]>> p,
+                                                                  boolean isRemove) {
         final List<ConsumerRecord<String, byte[]>> messages = getRecords().stream()
                 .filter(p)
                 .collect(Collectors.toList());
@@ -69,9 +69,4 @@ public class KakafkaConsumer {
         }
         return messages;
     }
-
-    protected synchronized void dropMessagesByFilter(Predicate<ConsumerRecord<String, byte[]>> predicate) {
-        records.removeIf(predicate);
-    }
-
 }

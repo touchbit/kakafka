@@ -19,8 +19,11 @@ package kakafka.client;
 import kakafka.KakafkaException;
 import lombok.Getter;
 import org.apache.kafka.clients.CommonClientConfigs;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 
+import java.time.Duration;
 import java.util.*;
+import java.util.function.Predicate;
 
 
 /**
@@ -35,6 +38,7 @@ public abstract class KakafkaClientBase {
     private final String topic4Produce;
     private final String[] topics4Consume;
     private final KakafkaProducer producer;
+    private final KakafkaConsumer consumer;
     private final static List<Class<?>> INSTANCES = new ArrayList<>();
 
     protected KakafkaClientBase(final Properties properties,
@@ -53,6 +57,7 @@ public abstract class KakafkaClientBase {
         }
         // for override method
         producer = new KakafkaProducer(getProperties());
+        consumer = new KakafkaConsumer(getProperties(), topics4Consume);
     }
 
     protected KakafkaClientBase(final String topic4Produce,
@@ -80,4 +85,76 @@ public abstract class KakafkaClientBase {
         getProducer().sendMessage(topic4Produce, message, wait);
     }
 
+    public List<ConsumerRecord<String, byte[]>> getMessages(Predicate<ConsumerRecord<String, byte[]>> p,
+                                                            boolean isRemove,
+                                                            int waitingMessageCount,
+                                                            Duration waitDuration) {
+        long wait = waitDuration.toMillis();
+        final List<ConsumerRecord<String, byte[]>> messages = new ArrayList<>();
+        if (wait < 200) {
+            return getConsumer().getMessages(p, isRemove);
+        }
+        while (wait > 0) {
+            wait -= 200;
+            messages.addAll(getConsumer().getMessages(p, isRemove));
+            if (messages.size() >= waitingMessageCount) {
+                return messages;
+            }
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException ignore) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        return messages;
+    }
+
+    public List<ConsumerRecord<String, byte[]>> getMessages(Predicate<ConsumerRecord<String, byte[]>> p,
+                                                            boolean isRemove,
+                                                            Duration waitDuration) {
+        return getMessages(p, isRemove, 1, waitDuration);
+    }
+
+    public List<ConsumerRecord<String, byte[]>> getMessages(Predicate<ConsumerRecord<String, byte[]>> p,
+                                                            Duration waitDuration) {
+        return getMessages(p, false, 1, waitDuration);
+    }
+
+    public List<ConsumerRecord<String, byte[]>> getMessages(Predicate<ConsumerRecord<String, byte[]>> p) {
+        return getMessages(p, false, 1, defaultWaitDuration());
+    }
+
+    public List<ConsumerRecord<String, byte[]>> getMessages(String searchString,
+                                                            boolean isRemove,
+                                                            int waitingMessageCount,
+                                                            Duration waitDuration) {
+        final Predicate<ConsumerRecord<String, byte[]>> consumerRecordPredicate = record ->
+                record.key().contains(searchString) || new String(record.value()).contains(searchString);
+        return getMessages(consumerRecordPredicate, isRemove, waitingMessageCount, waitDuration);
+    }
+
+    public List<ConsumerRecord<String, byte[]>> getMessages(String searchString,
+                                                            boolean isRemove,
+                                                            Duration waitDuration) {
+        return getMessages(searchString, isRemove, 1, waitDuration);
+    }
+
+    public List<ConsumerRecord<String, byte[]>> getMessages(String searchString,
+                                                            Duration waitDuration) {
+        return getMessages(searchString, false, 1, waitDuration);
+    }
+
+    public List<ConsumerRecord<String, byte[]>> getMessages(String searchString) {
+        return getMessages(searchString, false, 1, defaultWaitDuration());
+    }
+
+    protected Duration defaultWaitDuration() {
+        return Duration.ofSeconds(60);
+    }
+
+    @Override
+    public String toString() {
+        return "Produce topic: " + topic4Produce + "\n" +
+                "Consume topics: " + Arrays.toString(topics4Consume);
+    }
 }
