@@ -1,0 +1,42 @@
+ifneq ($(MAKECMDGOALS),$(findstring $(MAKECMDGOALS),build-doc-image run-doc-image push version))
+    VERSION := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+else
+	ifneq (version,$(firstword $(MAKECMDGOALS)))
+		VERSION := latest
+	endif
+endif
+$(eval $(VERSION):;@:)
+
+SHELL=/bin/bash -o pipefail
+
+b:
+	mvn clean package
+
+i:
+	mvn clean install
+
+t:
+	mvn clean test
+
+r:
+	@mvn surefire-report:report -Daggregate=true site -DgenerateReports=false -Dcoverage
+	@open ./all/target/site/jacoco-aggregate/index.html
+	@open target/site/surefire-report.html
+
+c:
+	mvn clean test -Dcoverage
+	open ./all/target/site/jacoco-aggregate/index.html
+
+d:
+	mvn clean deploy
+
+bd:
+	docker build --no-cache -t retrofit-veslo .
+
+upv:
+	mvn versions:use-latest-versions -DgenerateBackupPoms=false
+	cd ./example && mvn versions:use-latest-versions -DgenerateBackupPoms=false
+
+ver:
+	mvn versions:set -DnewVersion=${VERSION}
+	mvn clean install

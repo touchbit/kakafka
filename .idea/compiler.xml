@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="all" />
+        <module name="ext4grpc" />
+        <module name="ext4xml" />
+        <module name="ext4jackson" />
+        <module name="client" />
+        <module name="ext4gson" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="all" target="1.8" />
+      <module name="client" target="1.8" />
+      <module name="example" target="1.8" />
+      <module name="example11111" target="1.5" />
+      <module name="ext4grpc" target="1.8" />
+      <module name="ext4gson" target="1.8" />
+      <module name="ext4jackson" target="1.8" />
+      <module name="ext4xml" target="1.8" />
+      <module name="kakafka" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
