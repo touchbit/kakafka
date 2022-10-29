@@ -12,7 +12,6 @@
         <module name="ext4xml" />
         <module name="ext4jackson" />
         <module name="client" />
-        <module name="example" />
         <module name="ext4gson" />
       </profile>
     </annotationProcessing>

@@ -6,9 +6,9 @@
 
     <groupId>org.touchbit.kakafka</groupId>
     <artifactId>parent-pom</artifactId>
-    <version>1.0.0</version>
+    <version>0.0.0</version>
     <name>KaKafka (parent pom)</name>
-    <description></description>
+    <description>Parent pom for kafka client intended for autotests</description>
     <packaging>pom</packaging>
 
     <modules>
@@ -18,7 +18,6 @@
         <module>ext4gson</module>
         <module>ext4jackson</module>
         <module>ext4xml</module>
-        <module>example</module>
     </modules>
 
     <licenses>
@@ -101,56 +100,56 @@
             <dependency>
                 <groupId>org.touchbit.kakafka</groupId>
                 <artifactId>all</artifactId>
-                <version>1.0.0</version>
+                <version>0.0.0</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>org.touchbit.kakafka</groupId>
                 <artifactId>client</artifactId>
-                <version>1.0.0</version>
+                <version>0.0.0</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>org.touchbit.kakafka</groupId>
                 <artifactId>ext4jackson</artifactId>
-                <version>1.0.0</version>
+                <version>0.0.0</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>org.touchbit.kakafka</groupId>
                 <artifactId>ext4gson</artifactId>
-                <version>1.0.0</version>
+                <version>0.0.0</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>org.touchbit.kakafka</groupId>
                 <artifactId>ext4grpc</artifactId>
-                <version>1.0.0</version>
+                <version>0.0.0</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>org.touchbit.kakafka</groupId>
                 <artifactId>ext4xml</artifactId>
-                <version>1.0.0</version>
+                <version>0.0.0</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>org.touchbit.kakafka</groupId>
                 <artifactId>example</artifactId>
-                <version>1.0.0</version>
+                <version>0.1.0</version>
                 <scope>provided</scope>
             </dependency>
             <!-- kafka -->
             <dependency>
                 <groupId>org.apache.kafka</groupId>
                 <artifactId>kafka-clients</artifactId>
-                <version>3.2.1</version>
+                <version>3.3.1</version>
             </dependency>
             <!-- utils dependencies -->
             <dependency>
                 <groupId>io.grpc</groupId>
                 <artifactId>grpc-protobuf</artifactId>
-                <version>1.48.0</version>
+                <version>1.50.2</version>
             </dependency>
             <!-- databind -->
             <dependency>
@@ -493,7 +492,7 @@
                 <plugin>
                     <groupId>org.sonatype.plugins</groupId>
                     <artifactId>nexus-staging-maven-plugin</artifactId>
-                    <version>1.6.8</version>
+                    <version>1.6.13</version>
                     <extensions>true</extensions>
                     <executions>
                         <execution>
