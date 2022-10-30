@@ -8,10 +8,17 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 
 import java.time.Duration;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import static kakafka.util.KUtils.consumerRecordToString;
 
 @Slf4j
 @Getter
@@ -22,7 +29,7 @@ import java.util.stream.Collectors;
  */
 public class KakafkaConsumer {
 
-    private final List<ConsumerRecord<String, byte[]>> records = new ArrayList<>();
+    private static final List<ConsumerRecord<String, byte[]>> POLLED_RECORDS = new ArrayList<>();
     private final Properties properties;
     private final List<String> topicList;
     private final Consumer<String, byte[]> consumer;
@@ -42,31 +49,40 @@ public class KakafkaConsumer {
     }
 
     protected synchronized void dropMessagesByFilter(Predicate<ConsumerRecord<String, byte[]>> predicate) {
-        records.removeIf(predicate);
+        POLLED_RECORDS.removeIf(predicate);
     }
 
     protected void initConsumer() {
-        log.info("Subscribe for topics: {}", getTopicList());
+        log.info("[KFK] Subscribe for topics: {}", getTopicList());
         getConsumer().subscribe(getTopicList());
-        log.info("Poll consumer at first time");
+        log.info("[KFK] Poll consumer at first time");
         pollRecords(getConsumer(), Duration.ofSeconds(2));
-        log.info("Kafka consumer started for topics: {}", consumer.subscription());
+        log.info("[KFK] Kafka consumer started for topics: {}", consumer.subscription());
     }
 
     protected void pollRecords(Consumer<String, byte[]> consumer, Duration duration) {
         ConsumerRecords<String, byte[]> records = consumer.poll(duration);
-        records.forEach(record -> log.info(record.toString()));
-        records.forEach(getRecords()::add);
+        records.forEach(record -> {
+            log.info("[KFK] Polled records:\n{}", consumerRecordToString(record));
+            POLLED_RECORDS.add(record);
+        });
     }
 
     synchronized List<ConsumerRecord<String, byte[]>> getMessages(Predicate<ConsumerRecord<String, byte[]>> p,
                                                                   boolean isRemove) {
-        final List<ConsumerRecord<String, byte[]>> messages = getRecords().stream()
+        final List<ConsumerRecord<String, byte[]>> messages = POLLED_RECORDS.stream()
                 .filter(p)
                 .collect(Collectors.toList());
+        log.info("[KFK] Found {} records by filter from claimed records {}", messages.size(), POLLED_RECORDS.size());
         if (isRemove) {
-            getRecords().removeAll(messages);
+            messages.forEach(record ->
+                    log.info("[KFK] Message removed from static list: {}", consumerRecordToString(record)));
+            POLLED_RECORDS.removeAll(messages);
         }
         return messages;
+    }
+
+    public List<ConsumerRecord<String, byte[]>> getPolledRecords() {
+        return POLLED_RECORDS;
     }
 }

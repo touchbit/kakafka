@@ -18,11 +18,15 @@ package kakafka.client;
 
 import kakafka.KakafkaException;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
 import java.util.function.Predicate;
 
 
@@ -30,6 +34,7 @@ import java.util.function.Predicate;
  * @author Oleg Shaburov (shaburov.o.a@gmail.com)
  * Created: 21.08.2022
  */
+@Slf4j
 @Getter
 @SuppressWarnings("unused")
 public abstract class KakafkaClientBase {
@@ -44,6 +49,8 @@ public abstract class KakafkaClientBase {
     protected KakafkaClientBase(final Properties properties,
                                 final String topic4Produce,
                                 final String... topics4Consume) {
+        final String cliSimpleName = this.getClass().getSimpleName();
+        log.info("[KFK] Init kafka client: {}", cliSimpleName);
         if (INSTANCES.contains(this.getClass())) {
             throw new KakafkaException("Client must be singleton: " + this.getClass());
         }
@@ -51,13 +58,13 @@ public abstract class KakafkaClientBase {
         this.topic4Produce = topic4Produce;
         this.topics4Consume = topics4Consume;
         this.properties = properties;
-        final Object clientId = getProperties().get(CommonClientConfigs.CLIENT_ID_CONFIG);
+        final Object clientId = this.properties.get(CommonClientConfigs.CLIENT_ID_CONFIG);
         if (clientId == null || String.valueOf(clientId).isEmpty()) {
-            getProperties().setProperty(CommonClientConfigs.CLIENT_ID_CONFIG, "kakafka-" + this.getClass().getSimpleName());
+            this.properties.setProperty(CommonClientConfigs.CLIENT_ID_CONFIG, "KaKafka-" + cliSimpleName);
         }
         // for override method
-        producer = new KakafkaProducer(getProperties());
-        consumer = new KakafkaConsumer(getProperties(), topics4Consume);
+        producer = new KakafkaProducer(this.properties);
+        consumer = new KakafkaConsumer(this.properties, topics4Consume);
     }
 
     protected KakafkaClientBase(final String topic4Produce,

@@ -18,13 +18,11 @@ package kakafka.util;
 
 import kakafka.KakafkaException;
 import lombok.experimental.UtilityClass;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.BiFunction;
 
 /**
@@ -34,7 +32,25 @@ import java.util.function.BiFunction;
 @UtilityClass
 public class KUtils {
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static String consumerRecordToString(final ConsumerRecord<String, byte[]> record) {
+        final StringJoiner headers = new StringJoiner("\n - ");
+        record.headers().forEach(h -> {
+            final String value = new String(h.value());
+            if (!value.trim().isEmpty()) {
+                headers.add(h.key() + "=" + value);
+            }
+        });
+        StringJoiner result = new StringJoiner("\n");
+        result.add("topic: " + record.topic());
+        result.add("partition: " + record.partition());
+        result.add(record.timestampType() + ": " + record.timestamp());
+        result.add("headers: " + (headers.length() == 0 ? "[]" : "\n - " + headers));
+        result.add("key: " + record.key());
+        result.add("value: " + new String(record.value()));
+        return result.toString();
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes" })
     public static <T> Serializer<T> getSerializer(T tClass) {
         Objects.requireNonNull(tClass);
         try {
@@ -54,14 +70,14 @@ public class KUtils {
             String message = t.getMessage();
             if (message.contains("Serializer4Proto")) {
                 throw new KakafkaException("\n\nKafkaProtoSerializer class not found. Add 'ext4grpc' dependency to maven/gradle configuration file\n\n" +
-                                           "Gradle:\nimplementation group: 'org.touchbit.kakafka', name: 'ext4grpc', version: '1.0.0'\n\n" +
-                                           "Maven:\n" +
-                                           "<dependency>\n" +
-                                           "    <groupId>org.touchbit.kakafka</groupId>\n" +
-                                           "    <artifactId>ext4grpc</artifactId>\n" +
-                                           "    <version>1.0.0</version>\n" +
-                                           "    <scope>compile</scope>\n" +
-                                           "</dependency>", true);
+                        "Gradle:\nimplementation group: 'org.touchbit.kakafka', name: 'ext4grpc', version: '1.0.0'\n\n" +
+                        "Maven:\n" +
+                        "<dependency>\n" +
+                        "    <groupId>org.touchbit.kakafka</groupId>\n" +
+                        "    <artifactId>ext4grpc</artifactId>\n" +
+                        "    <version>1.0.0</version>\n" +
+                        "    <scope>compile</scope>\n" +
+                        "</dependency>", true);
             }
             throw t;
         }

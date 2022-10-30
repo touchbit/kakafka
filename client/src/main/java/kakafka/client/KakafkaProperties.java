@@ -22,7 +22,6 @@ import org.apache.kafka.common.config.SslConfigs;
 
 import java.nio.file.Path;
 import java.util.Properties;
-import java.util.UUID;
 
 import static org.apache.kafka.clients.CommonClientConfigs.RETRIES_CONFIG;
 import static org.apache.kafka.clients.CommonClientConfigs.SECURITY_PROTOCOL_CONFIG;
@@ -47,8 +46,8 @@ public class KakafkaProperties extends Properties {
         put(BUFFER_MEMORY_CONFIG, 33554432);
         put(SASL_MECHANISM, "");
         put(RECONNECT_BACKOFF_MS_CONFIG, "1000");
-        put("group.id", "KaKafka_" + UUID.randomUUID());
-        put("key.deserializer","org.apache.kafka.common.serialization.StringDeserializer");
+        put("group.id", "KaKafka");
+        put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         put("value.deserializer","org.apache.kafka.common.serialization.ByteArrayDeserializer");
         put("auto.offset.reset","latest");
     }
