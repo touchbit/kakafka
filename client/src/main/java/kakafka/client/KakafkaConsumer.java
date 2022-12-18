@@ -48,10 +48,6 @@ public class KakafkaConsumer {
                 pollRecords(getConsumer(), poolingDuration), 0, poolingDuration.toMillis(), TimeUnit.MILLISECONDS);
     }
 
-    protected synchronized void dropMessagesByFilter(Predicate<ConsumerRecord<String, byte[]>> predicate) {
-        POLLED_RECORDS.removeIf(predicate);
-    }
-
     protected void initConsumer() {
         log.info("[KFK] Subscribe for topics: {}", getTopicList());
         getConsumer().subscribe(getTopicList());
@@ -68,10 +64,10 @@ public class KakafkaConsumer {
         });
     }
 
-    synchronized List<ConsumerRecord<String, byte[]>> getMessages(Predicate<ConsumerRecord<String, byte[]>> p,
+    synchronized List<ConsumerRecord<String, byte[]>> getMessages(Predicate<ConsumerRecord<String, byte[]>> filter,
                                                                   boolean isRemove) {
         final List<ConsumerRecord<String, byte[]>> messages = POLLED_RECORDS.stream()
-                .filter(p)
+                .filter(filter)
                 .collect(Collectors.toList());
         log.info("[KFK] Found {} records by filter from claimed records {}", messages.size(), POLLED_RECORDS.size());
         if (isRemove) {
@@ -84,5 +80,9 @@ public class KakafkaConsumer {
 
     public List<ConsumerRecord<String, byte[]>> getPolledRecords() {
         return POLLED_RECORDS;
+    }
+
+    protected synchronized void dropMessagesByFilter(Predicate<ConsumerRecord<String, byte[]>> predicate) {
+        POLLED_RECORDS.removeIf(predicate);
     }
 }
