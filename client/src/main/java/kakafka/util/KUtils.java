@@ -19,16 +19,20 @@ package kakafka.util;
 import kakafka.KakafkaException;
 import lombok.experimental.UtilityClass;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.header.Header;
+import org.apache.kafka.common.header.Headers;
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.stream.StreamSupport;
 
 /**
  * @author Oleg Shaburov (shaburov.o.a@gmail.com)
  * Created: 21.08.2022
  */
+@SuppressWarnings("DuplicatedCode")
 @UtilityClass
 public class KUtils {
 
@@ -111,6 +115,34 @@ public class KUtils {
             result.addAll(getThrowableCauses(cause));
         }
         return result;
+    }
+
+    public static boolean recordContainsString(ConsumerRecord<String, byte[]> record, String s, boolean ignoreCase) {
+        final boolean headersContainsString = headersContainsString(record.headers(), s, ignoreCase);
+        if (headersContainsString) {
+            return true;
+        }
+        if (ignoreCase) {
+            return ((record.key() != null && record.key().toLowerCase().contains(s.toLowerCase()))
+                    || (record.value() != null && new String(record.value()).toLowerCase().contains(s.toLowerCase())));
+        }
+        return (record.key() != null && record.key().contains(s))
+               || (record.value() != null && new String(record.value()).contains(s));
+    }
+
+    public static boolean headersContainsString(Headers headers, String s, boolean ignoreCase) {
+        return StreamSupport
+                .stream(headers.spliterator(), false)
+                .anyMatch(h -> headerContainsString(h, s, ignoreCase));
+    }
+
+    public static boolean headerContainsString(Header header, String s, boolean ignoreCase) {
+        if (ignoreCase) {
+            return (header.key() != null && header.key().toLowerCase().contains(s.toLowerCase())) ||
+                   (header.value() != null && new String(header.value()).toLowerCase().contains(s.toLowerCase()));
+        }
+        return (header.key() != null && header.key().contains(s)) ||
+               (header.value() != null && new String(header.value()).contains(s));
     }
 
 }

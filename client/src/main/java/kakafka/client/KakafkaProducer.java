@@ -17,6 +17,8 @@
 package kakafka.client;
 
 import kakafka.KakafkaException;
+import kakafka.client.api.IKakafkaProducer;
+import kakafka.client.api.KakafkaTopic;
 import kakafka.util.KUtils;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -27,11 +29,7 @@ import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.serialization.Serializer;
 
 import java.util.Properties;
-import java.util.UUID;
 import java.util.concurrent.Future;
-
-import static java.util.UUID.randomUUID;
-import static kakafka.util.KUtils.getSerializer;
 
 /**
  * @author Oleg Shaburov (shaburov.o.a@gmail.com)
@@ -40,65 +38,41 @@ import static kakafka.util.KUtils.getSerializer;
 @Slf4j
 @Getter
 @SuppressWarnings("unused")
-public class KakafkaProducer {
+public class KakafkaProducer implements IKakafkaProducer {
 
     private final Properties properties;
+    private final String topicForProduce;
 
-    public KakafkaProducer(final Properties properties) {
+    public KakafkaProducer(final Properties properties, KakafkaTopic topicForProduce) {
+        this(properties, topicForProduce.getName());
+    }
+
+    public KakafkaProducer(final Properties properties, String topicForProduce) {
         this.properties = properties;
+        this.topicForProduce = topicForProduce;
     }
 
-    public <V> void sendMessage(String topic, V message) {
-        final UUID key = randomUUID();
-        sendMessage(topic, null, null, key, message, null, getSerializer(key), getSerializer(message), false);
+    @Override
+    public <T> Serializer<T> getPSerializer(T tClass) {
+        return KUtils.getSerializer(tClass);
     }
 
-    public <V> void sendMessage(String topic, V message, boolean wait) {
-        final UUID key = randomUUID();
-        sendMessage(topic, null, null, key, message, null, getSerializer(key), getSerializer(message), wait);
+    @Override
+    public String getTopicForProduce() {
+        return this.topicForProduce;
     }
 
-    public <V> void sendMessage(String topic, V message, Iterable<Header> headers) {
-        final UUID key = randomUUID();
-        sendMessage(topic, null, null, key, message, headers, getSerializer(key), getSerializer(message), false);
-    }
-
-    public <V> void sendMessage(String topic, V message, Iterable<Header> headers, boolean wait) {
-        final UUID key = randomUUID();
-        sendMessage(topic, null, null, key, message, headers, getSerializer(key), getSerializer(message), wait);
-    }
-
-    public <K, V> void sendMessage(String topic, K key, V message) {
-        sendMessage(topic, null, null, key, message, null, getSerializer(key), getSerializer(message), false);
-    }
-
-    public <K, V> void sendMessage(String topic, K key, V message, boolean wait) {
-        sendMessage(topic, null, null, key, message, null, getSerializer(key), getSerializer(message), wait);
-    }
-
-    public <K, V> void sendMessage(String topic, K key, V message, Iterable<Header> headers) {
-        sendMessage(topic, null, null, key, message, headers, getSerializer(key), getSerializer(message), false);
-    }
-
-    public <K, V> void sendMessage(String topic, K key, V message, Iterable<Header> headers, boolean wait) {
-        sendMessage(topic, null, null, key, message, headers, getSerializer(key), getSerializer(message), wait);
-    }
-
-    public <K, V> void sendMessage(String topic, Integer partition, Long timestamp, K key, V message, Iterable<Header> headers, boolean wait) {
-        sendMessage(topic, partition, timestamp, key, message, headers, getSerializer(key), getSerializer(message), wait);
-    }
-
-    public <K, V> void sendMessage(final String topic,
-                                   final Integer partition,
-                                   final Long timestamp,
-                                   final K key,
-                                   final V message,
-                                   final Iterable<Header> headers,
-                                   final Serializer<K> keySerializer,
-                                   final Serializer<V> valueSerializer,
-                                   final boolean wait) {
+    public <K, V> void send(final String topic,
+                            final Integer partition,
+                            final Long timestamp,
+                            final K key,
+                            final V msg,
+                            final Iterable<Header> headers,
+                            final Serializer<K> keySerializer,
+                            final Serializer<V> valueSerializer,
+                            final boolean wait) {
         try (final KafkaProducer<K, V> producer = new KafkaProducer<>(properties, keySerializer, valueSerializer)) {
-            final ProducerRecord<K, V> record = new ProducerRecord<>(topic, partition, timestamp, key, message, headers);
+            final ProducerRecord<K, V> record = new ProducerRecord<>(topic, partition, timestamp, key, msg, headers);
             final Future<RecordMetadata> future = producer.send(record);
             log.info("Sending kafka message {}", record);
             producer.flush();

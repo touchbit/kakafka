@@ -21,35 +21,28 @@ import org.apache.kafka.common.header.Header;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.List;
 
 @SuppressWarnings("unused")
-public class KakaHeaders {
+public class KakafkaHeaders extends ArrayList<Header> {
 
-    private final List<Header> headers = new ArrayList<>();
-
-    public KakaHeaders add(final String key, final String value) {
-        headers.add(new KakaHeader(key, value));
+    public KakafkaHeaders add(final String key, final String value) {
+        add(new KakafkaHeader(key, value));
         return this;
     }
 
-    public KakaHeaders add(String key, String value, Charset charset) {
-        headers.add(new KakaHeader(key, value, charset));
+    public KakafkaHeaders add(String key, String value, Charset charset) {
+        add(new KakafkaHeader(key, value, charset));
         return this;
     }
 
-    public KakaHeaders add(final String key, final byte[] value) {
-        headers.add(new KakaHeader(key, value));
+    public KakafkaHeaders add(final String key, final byte[] value) {
+        add(new KakafkaHeader(key, value));
         return this;
     }
 
-    public KakaHeaders add(final ByteBuffer keyBuffer, final ByteBuffer valueBuffer) {
-        headers.add(new KakaHeader(keyBuffer, valueBuffer));
+    public KakafkaHeaders add(final ByteBuffer keyBuffer, final ByteBuffer valueBuffer) {
+        add(new KakafkaHeader(keyBuffer, valueBuffer));
         return this;
-    }
-
-    public List<Header> getList() {
-        return headers;
     }
 
 }

@@ -23,21 +23,22 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-public class KakaHeader extends RecordHeader {
+public class KakafkaHeader extends RecordHeader {
 
-    public KakaHeader(@NonNull final String key, final String value) {
+    public KakafkaHeader(@NonNull final String key, final String value) {
         this(key, value, StandardCharsets.UTF_8);
     }
 
-    public KakaHeader(@NonNull final String key, String value, @NonNull final Charset charset) {
+    public KakafkaHeader(@NonNull final String key, String value, @NonNull final Charset charset) {
         super(key, (value == null ? null : value.getBytes(charset)));
     }
 
-    public KakaHeader(@NonNull final String key, final byte[] value) {
+    public KakafkaHeader(@NonNull final String key, final byte[] value) {
         super(key, value);
     }
 
-    public KakaHeader(@NonNull final ByteBuffer keyBuffer, final ByteBuffer valueBuffer) {
+    public KakafkaHeader(@NonNull final ByteBuffer keyBuffer, final ByteBuffer valueBuffer) {
         super(keyBuffer, valueBuffer);
     }
+
 }

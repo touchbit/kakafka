@@ -3,14 +3,13 @@
 
 
 ```java
-import kakafka.client.KakafkaTopic;
+import kakafka.client.api.KakafkaTopic;
 import lombok.Getter;
 
 @Getter
 public enum Topic implements KakafkaTopic {
 
     PAYMENT_INCOMING_TOPIC("payment.incoming"),
-    PAYMENT_OUTGOING_TOPIC("payment.outgoing"),
     PAYMENT_OK_TOPIC("payment.ok"),
     PAYMENT_ERROR_TOPIC("payment.error"),
     ;

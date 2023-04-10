@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package kakafka.client;
+package kakafka.client.api;
+
+import kakafka.client.KakafkaClientBase;
 
 /**
  * For topics enumeration
@@ -27,6 +29,7 @@ package kakafka.client;
  * @see kakafka.example.IncomingPaymentsKafkaClient
  * @see KakafkaClientBase#KakafkaClientBase(KakafkaTopic, KakafkaTopic...)
  */
+@SuppressWarnings("JavadocReference")
 public interface KakafkaTopic {
 
     String getName();
