@@ -28,6 +28,7 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.serialization.Serializer;
 
+import java.util.Collection;
 import java.util.Properties;
 import java.util.concurrent.Future;
 
@@ -67,7 +68,7 @@ public class KakafkaProducer implements IKakafkaProducer {
                             final Long timestamp,
                             final K key,
                             final V msg,
-                            final Iterable<Header> headers,
+                            final Collection<Header> headers,
                             final Serializer<K> keySerializer,
                             final Serializer<V> valueSerializer,
                             final boolean wait) {

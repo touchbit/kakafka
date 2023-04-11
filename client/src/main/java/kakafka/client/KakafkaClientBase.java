@@ -27,6 +27,7 @@ import org.apache.kafka.common.serialization.Serializer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 import java.util.function.Predicate;
@@ -109,7 +110,7 @@ public class KakafkaClientBase implements IKakafkaProducer, IKakafkaConsumer {
                             Long ts,
                             K key,
                             V msg,
-                            Iterable<Header> headers,
+                            Collection<Header> headers,
                             Serializer<K> keySerializer,
                             Serializer<V> valueSerializer,
                             boolean wait) {
