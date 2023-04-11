@@ -7,11 +7,11 @@
     <parent>
         <groupId>org.touchbit.kakafka</groupId>
         <artifactId>parent-pom</artifactId>
-        <version>0.4.0</version>
+        <version>0.4.1</version>
     </parent>
 
     <artifactId>ext4xml</artifactId>
-    <version>0.4.0</version>
+    <version>0.4.1</version>
     <packaging>jar</packaging>
     <name>XML extension for Kakafka client</name>
     <description></description>
