@@ -68,7 +68,7 @@ public interface IKakafkaProducer {
         send(getTopicForProduce(), null, null, key, msg, headers, getPSerializer(key), getPSerializer(msg), true);
     }
 
-    default <V> void send(V msg, Consumer<Collection<Header>> consumer) {
+    default <V> void send(V msg, Consumer<KakafkaHeaders> consumer) {
         final KakafkaHeaders headers = new KakafkaHeaders();
         consumer.accept(headers);
         final UUID key = randomUUID();
@@ -80,7 +80,7 @@ public interface IKakafkaProducer {
         send(topic, null, null, key, msg, headers, getPSerializer(key), getPSerializer(msg), true);
     }
 
-    default <V> void send(V msg, Consumer<Collection<Header>> consumer, boolean wait) {
+    default <V> void send(V msg, Consumer<KakafkaHeaders> consumer, boolean wait) {
         final KakafkaHeaders headers = new KakafkaHeaders();
         consumer.accept(headers);
         final UUID key = randomUUID();
@@ -113,7 +113,7 @@ public interface IKakafkaProducer {
         send(topic, null, null, key, msg, null, getPSerializer(key), getPSerializer(msg), wait);
     }
 
-    default <K, V> void send(K key, V msg, Consumer<Collection<Header>> consumer) {
+    default <K, V> void send(K key, V msg, Consumer<KakafkaHeaders> consumer) {
         final KakafkaHeaders headers = new KakafkaHeaders();
         consumer.accept(headers);
         send(getTopicForProduce(), null, null, key, msg, headers, getPSerializer(key), getPSerializer(msg), true);
@@ -123,7 +123,7 @@ public interface IKakafkaProducer {
         send(getTopicForProduce(), null, null, key, msg, headers, getPSerializer(key), getPSerializer(msg), true);
     }
 
-    default <K, V> void send(K key, V msg, Consumer<Collection<Header>> consumer, boolean wait) {
+    default <K, V> void send(K key, V msg, Consumer<KakafkaHeaders> consumer, boolean wait) {
         final KakafkaHeaders headers = new KakafkaHeaders();
         consumer.accept(headers);
         send(getTopicForProduce(), null, null, key, msg, headers, getPSerializer(key), getPSerializer(msg), wait);
@@ -141,7 +141,7 @@ public interface IKakafkaProducer {
         send(topic, null, null, key, msg, headers, getPSerializer(key), getPSerializer(msg), wait);
     }
 
-    default <K, V> void send(Integer partition, Long ts, K key, V msg, Consumer<Collection<Header>> consumer, boolean wait) {
+    default <K, V> void send(Integer partition, Long ts, K key, V msg, Consumer<KakafkaHeaders> consumer, boolean wait) {
         final KakafkaHeaders headers = new KakafkaHeaders();
         consumer.accept(headers);
         send(getTopicForProduce(), partition, ts, key, msg, headers, getPSerializer(key), getPSerializer(msg), wait);
@@ -159,7 +159,7 @@ public interface IKakafkaProducer {
                              Long ts,
                              K key,
                              V msg,
-                             Consumer<Collection<Header>> consumer,
+                             Consumer<KakafkaHeaders> consumer,
                              Serializer<K> keySerializer,
                              Serializer<V> valueSerializer,
                              boolean wait) {
