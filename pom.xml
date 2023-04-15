@@ -6,7 +6,7 @@
 
     <groupId>org.touchbit.kakafka</groupId>
     <artifactId>parent-pom</artifactId>
-    <version>0.4.3</version>
+    <version>0.4.4</version>
     <name>KaKafka (parent pom)</name>
     <description>Parent pom for kafka client intended for autotests</description>
     <packaging>pom</packaging>
@@ -100,37 +100,37 @@
             <dependency>
                 <groupId>org.touchbit.kakafka</groupId>
                 <artifactId>all</artifactId>
-                <version>0.4.3</version>
+                <version>0.4.4</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>org.touchbit.kakafka</groupId>
                 <artifactId>client</artifactId>
-                <version>0.4.3</version>
+                <version>0.4.4</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>org.touchbit.kakafka</groupId>
                 <artifactId>ext4jackson</artifactId>
-                <version>0.4.3</version>
+                <version>0.4.4</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>org.touchbit.kakafka</groupId>
                 <artifactId>ext4gson</artifactId>
-                <version>0.4.3</version>
+                <version>0.4.4</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>org.touchbit.kakafka</groupId>
                 <artifactId>ext4grpc</artifactId>
-                <version>0.4.3</version>
+                <version>0.4.4</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>org.touchbit.kakafka</groupId>
                 <artifactId>ext4xml</artifactId>
-                <version>0.4.3</version>
+                <version>0.4.4</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>

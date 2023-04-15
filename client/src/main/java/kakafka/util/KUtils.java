@@ -24,7 +24,11 @@ import org.apache.kafka.common.header.Headers;
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.StringJoiner;
+import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.stream.StreamSupport;
 
@@ -37,21 +41,33 @@ import java.util.stream.StreamSupport;
 public class KUtils {
 
     public static String consumerRecordToString(final ConsumerRecord<String, byte[]> record) {
-        final StringJoiner headers = new StringJoiner("\n - ");
-        record.headers().forEach(h -> {
-            final String value = new String(h.value());
-            if (!value.trim().isEmpty()) {
-                headers.add(h.key() + "=" + value);
+        if (record != null) {
+            final StringJoiner headers = new StringJoiner("\n - ");
+            record.headers().forEach(h -> {
+                final byte[] bytesValue = h.value();
+                if (bytesValue != null) {
+                    if (bytesValue.length > 0) {
+                        headers.add(h.key() + "=" + new String(bytesValue));
+                    } else {
+                        headers.add(h.key() + "=");
+                    }
+                }
+            });
+            StringJoiner result = new StringJoiner("\n");
+            result.add("topic: " + record.topic());
+            result.add("partition: " + record.partition());
+            result.add(record.timestampType() + ": " + record.timestamp());
+            result.add("headers: " + (headers.length() == 0 ? "[]" : "\n - " + headers));
+            result.add("key: " + record.key());
+            final byte[] byteBody = record.value();
+            if (byteBody != null) {
+                result.add("value: " + new String(record.value()));
+            } else {
+                result.add("value: <not present (null)>");
             }
-        });
-        StringJoiner result = new StringJoiner("\n");
-        result.add("topic: " + record.topic());
-        result.add("partition: " + record.partition());
-        result.add(record.timestampType() + ": " + record.timestamp());
-        result.add("headers: " + (headers.length() == 0 ? "[]" : "\n - " + headers));
-        result.add("key: " + record.key());
-        result.add("value: " + new String(record.value()));
-        return result.toString();
+            return result.toString();
+        }
+        return "null";
     }
 
     @SuppressWarnings({"unchecked", "rawtypes" })

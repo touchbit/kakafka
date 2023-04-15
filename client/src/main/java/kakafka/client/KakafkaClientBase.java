@@ -25,6 +25,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.serialization.Serializer;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -66,7 +67,11 @@ public class KakafkaClientBase implements IKakafkaProducer, IKakafkaConsumer {
             this.properties.setProperty(CLIENT_ID_CONFIG, "KaKafka-" + cliSimpleName);
         }
         producer = new KakafkaProducer(this.properties, this.topic4Produce);
-        consumer = new KakafkaConsumer(this.properties, topics4Consume);
+        consumer = new KakafkaConsumer(this.properties, defaultConsumerPoolingDuration(), topics4Consume);
+    }
+
+    protected Duration defaultConsumerPoolingDuration() {
+        return Duration.ofMillis(200);
     }
 
     protected KakafkaClientBase(final String topic4Produce,
