@@ -77,4 +77,26 @@ public interface IKakafkaConsumer {
         return getMessages(searchString, -1, null);
     }
 
+
+    default ConsumerRecord<String, byte[]> getMessage(Predicate<ConsumerRecord<String, byte[]>> predicate,
+                                                      Duration waitDuration) {
+        return getFirstOrNull(getMessages(predicate, 1, waitDuration));
+    }
+
+    default ConsumerRecord<String, byte[]> getMessage(String searchString,
+                                                      Duration waitDuration) {
+        return getFirstOrNull(getMessages(searchString, 1, waitDuration));
+    }
+
+    default ConsumerRecord<String, byte[]> getMessage(String searchString) {
+        return getFirstOrNull(getMessages(searchString));
+    }
+
+    default ConsumerRecord<String, byte[]> getFirstOrNull(List<ConsumerRecord<String, byte[]>> recordList) {
+        if (recordList == null || recordList.isEmpty()) {
+            return null;
+        }
+        return recordList.get(0);
+    }
+
 }

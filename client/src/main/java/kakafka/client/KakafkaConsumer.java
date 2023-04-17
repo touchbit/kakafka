@@ -12,9 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -29,13 +27,15 @@ import static kakafka.util.KUtils.consumerRecordToString;
  */
 public class KakafkaConsumer implements IKakafkaConsumer {
 
-    private final List<ConsumerRecord<String, byte[]>> polledRecords = synchronizedList(new ArrayList<>());
+    private static final List<ConsumerRecord<String, byte[]>> POLLED_RECORDS = synchronizedList(new ArrayList<>());
     private final Properties properties;
     private final List<String> topicList;
     private final Consumer<String, byte[]> consumer;
+    private final Thread poller;
+    private final AtomicBoolean isRun = new AtomicBoolean(true);
 
     public KakafkaConsumer(final Properties properties, final String... topics) {
-        this(properties, Duration.ofMillis(200), topics);
+        this(properties, Duration.ofMillis(500), topics);
     }
 
     public KakafkaConsumer(final Properties properties, final Duration poolingDuration, final String... topics) {
@@ -43,12 +43,21 @@ public class KakafkaConsumer implements IKakafkaConsumer {
         this.consumer = new KafkaConsumer<>(this.properties);
         this.topicList = Arrays.stream(topics).collect(Collectors.toList());
         initConsumer();
-        ScheduledFuture<?> scheduler = Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() ->
-                pollRecords(this.consumer, poolingDuration), 0, poolingDuration.toMillis(), TimeUnit.MILLISECONDS);
+        poller = new Thread(() -> {
+            while (isRun.get()) {
+                pollRecords(this.consumer, poolingDuration);
+            }
+            this.consumer.commitSync();
+            this.consumer.close();
+        });
+        poller.start();
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            consumer.commitSync();
-            consumer.close();
-            scheduler.cancel(true);
+            isRun.set(false);
+            try {
+                poller.join(Duration.ofSeconds(1).toMillis());
+            } catch (InterruptedException ignore) {
+                Thread.currentThread().interrupt();
+            }
         }));
     }
 
@@ -62,13 +71,15 @@ public class KakafkaConsumer implements IKakafkaConsumer {
 
     protected void pollRecords(Consumer<String, byte[]> consumer, Duration duration) {
         try {
+            log.trace("[KFK] Poll consumer records with {} ms. duration", duration.toMillis());
             ConsumerRecords<String, byte[]> records = consumer.poll(duration);
             if (records != null) {
+                log.trace("[KFK] Polled {} records", records.count());
                 records.forEach(record -> {
                     try {
-                        this.polledRecords.add(record);
+                        POLLED_RECORDS.add(record);
                     } catch (Exception e) {
-                        log.error("Unable to add polled record: " + record, e);
+                        log.error("[KFK] Unable to add polled record: " + record, e);
                     }
                     try {
                         final String stringRecord = consumerRecordToString(record);
@@ -85,15 +96,18 @@ public class KakafkaConsumer implements IKakafkaConsumer {
 
     @Override
     public List<ConsumerRecord<String, byte[]>> getMessages(Predicate<ConsumerRecord<String, byte[]>> filter) {
-        final List<ConsumerRecord<String, byte[]>> messages = this.polledRecords.stream()
-                .filter(filter)
-                .collect(Collectors.toList());
-        if (messages.size() > 0) {
-            log.info("[KFK] Found {} records by filter", messages.size());
-        } else {
+        final List<ConsumerRecord<String, byte[]>> messages = new ArrayList<>();
+        POLLED_RECORDS.forEach(record -> {
+            if (filter.test(record) && getTopicPredicate().test(record)) {
+                messages.add(record);
+            }
+        });
+        if (messages.isEmpty()) {
             log.debug("[KFK] Found 0 records by filter");
+        } else {
+            log.info("[KFK] Found {} records by filter", messages.size());
         }
-        this.polledRecords.removeAll(messages);
+        POLLED_RECORDS.removeAll(messages);
         if (log.isTraceEnabled()) {
             messages.forEach(record ->
                     log.trace("[KFK] Message removed from polled records list:\n{}", consumerRecordToString(record)));
@@ -103,11 +117,11 @@ public class KakafkaConsumer implements IKakafkaConsumer {
     }
 
     public List<ConsumerRecord<String, byte[]>> getPolledRecords() {
-        return polledRecords;
+        return POLLED_RECORDS;
     }
 
     protected synchronized void dropMessagesByFilter(Predicate<ConsumerRecord<String, byte[]>> predicate) {
-        this.polledRecords.removeIf(predicate);
+        POLLED_RECORDS.removeIf(predicate);
     }
 
     public Properties getProperties() {
@@ -120,6 +134,10 @@ public class KakafkaConsumer implements IKakafkaConsumer {
 
     public Consumer<String, byte[]> getConsumer() {
         return consumer;
+    }
+
+    protected Predicate<ConsumerRecord<String, byte[]>> getTopicPredicate() {
+        return a -> topicList.contains(a.topic());
     }
 
 }

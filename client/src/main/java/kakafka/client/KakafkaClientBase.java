@@ -71,7 +71,7 @@ public class KakafkaClientBase implements IKakafkaProducer, IKakafkaConsumer {
     }
 
     protected Duration defaultConsumerPoolingDuration() {
-        return Duration.ofMillis(200);
+        return Duration.ofMillis(500);
     }
 
     protected KakafkaClientBase(final String topic4Produce,

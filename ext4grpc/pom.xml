@@ -7,11 +7,11 @@
     <parent>
         <groupId>org.touchbit.kakafka</groupId>
         <artifactId>parent-pom</artifactId>
-        <version>0.4.4</version>
+        <version>0.4.6</version>
     </parent>
 
     <artifactId>ext4grpc</artifactId>
-    <version>0.4.4</version>
+    <version>0.4.6</version>
     <packaging>jar</packaging>
     <name>gRPC extension for Kakafka client</name>
     <description></description>
